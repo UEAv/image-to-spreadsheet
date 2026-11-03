@@ -1,0 +1,384 @@
+# Project Brief: AI-Powered Image-to-Spreadsheet Extractor
+
+## 1. Project Overview
+
+The AI-Powered Image-to-Spreadsheet Extractor is a web application that automatically converts individual portrait images into structured spreadsheet records.
+
+Users will upload one or multiple images, each containing an individual's portrait and their name somewhere within the image. The application will detect and extract the name, perform supported image-analysis tasks, organize the information into structured records, and generate downloadable Excel or CSV files.
+
+The goal is to minimize manual data entry by building an automated pipeline that combines OCR, image processing, and independently developed AI components.
+
+The project will begin with reliable name extraction and gradually expand to additional computer vision capabilities.
+
+## 2. Problem Statement
+
+Manually extracting names and organizing personal information from portrait images can be time-consuming and error-prone.
+
+When processing many portraits, manually reading names, organizing records, and creating spreadsheets becomes repetitive and inefficient.
+
+This project aims to automate that process through a web application that can:
+
+- Accept multiple portrait images.
+- Locate names regardless of where they appear within each image.
+- Extract and organize information automatically.
+- Perform supported AI-based image analysis.
+- Generate structured spreadsheets with minimal manual intervention.
+
+## 3. Project Objectives
+
+- Develop a website that accepts one or multiple portrait images.
+- Automatically detect text regardless of its position within an image.
+- Extract names using OCR.
+- Develop and integrate separate AI components for different processing tasks.
+- Estimate broad age categories where appropriate.
+- Extract race information only when explicitly available in image text or another verified data source; do not infer race from facial appearance.
+- Automatically organize extracted information into structured records.
+- Generate downloadable Excel and CSV files.
+- Evaluate each component independently and improve its performance.
+- Build a modular architecture that supports future AI and computer vision capabilities.
+
+## 4. Core Features
+
+### Phase 1: Image Upload and Processing
+
+- Upload JPG, JPEG, and PNG images.
+- Support multiple image uploads in one session.
+- Process each portrait independently.
+- Validate image formats and handle invalid files.
+- Preprocess images to improve text recognition.
+- Detect text regions regardless of their position within the image.
+
+**Important:** Each uploaded image is expected to contain one individual's portrait and their associated name. The name may appear at the bottom, top, side, or another position within the image.
+
+### Phase 2: Automated Name Extraction
+
+- Detect visible text regions using a text detection model.
+- Extract text using an OCR engine.
+- Identify the person's name among the detected text.
+- Clean and normalize extracted names.
+- Preserve the original OCR output for debugging and evaluation.
+- Record OCR confidence scores.
+- Flag uncertain or incomplete extractions for review.
+
+The system should not assume that names always appear in a fixed location.
+
+### Phase 3: AI-Based Image Analysis
+
+Develop and integrate independent AI components for the additional data fields.
+
+**Age Range Estimation**
+
+- Explore computer vision models for estimating broad age categories.
+- Classify images into the project's defined categories: `Young` and `Old`.
+- Define the age boundaries before training or evaluating a model.
+- Evaluate predictions against verified reference labels.
+- Include confidence scores and an `Unknown` result when the model is uncertain.
+- Treat predictions as estimates, not verified ages, especially for minors.
+
+**Race Information**
+
+- Do not classify race from facial appearance.
+- Extract race information only when explicitly printed in the image or obtained from an appropriate verified data source.
+- If no reliable information is available, leave the field blank or mark it as `Unknown`.
+
+Each processing component should operate independently so that improvements to one model do not require rebuilding the entire system.
+
+### Phase 4: Structured Data Generation
+
+Organize the results into the following spreadsheet columns:
+
+| Column | Description |
+|---|---|
+| S/N | Sequential record number |
+| Name | Name extracted using OCR |
+| Age Range | Estimated category: Young or Old, or Unknown |
+| Race | Explicitly documented information only, or Unknown |
+
+The system should automatically create one record for each uploaded portrait.
+
+Where information cannot be extracted or reliably established, it should remain unknown rather than being guessed.
+
+### Phase 5: Results and Export
+
+- Display automatically generated records in a structured table.
+- Allow users to review and correct extraction errors.
+- Flag uncertain predictions and OCR results.
+- Allow users to download the final spreadsheet.
+- Support Excel (`.xlsx`) and CSV (`.csv`) formats.
+- Preserve consistent column names and formatting.
+
+The application should automate the main processing workflow while allowing users to correct uncertain results when necessary.
+
+## 5. Proposed Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming language | Python |
+| Web application | Streamlit |
+| Image processing | OpenCV |
+| Text detection and OCR | PaddleOCR or EasyOCR |
+| Data manipulation | Pandas |
+| Spreadsheet generation | OpenPyXL |
+| AI model development | PyTorch |
+| Model evaluation | Scikit-learn |
+| Version control | Git and GitHub |
+| Development environment | VS Code / Jupyter Notebook |
+| GPU training | Google Colab, where necessary |
+| Deployment | Streamlit Community Cloud or another suitable platform |
+
+The final OCR engine and AI models will be selected after testing suitable alternatives on representative portrait images.
+
+Pre-trained models will be evaluated before deciding whether custom model training is necessary.
+
+## 6. System Architecture and Workflow
+
+The application will follow a modular processing pipeline.
+
+1. **Image Upload:** The user uploads one or multiple portrait images.
+2. **Image Validation:** The system checks file formats, dimensions, and image integrity.
+3. **Image Preprocessing:** Images are enhanced where necessary to improve recognition.
+4. **Text Detection:** A text detection model locates text regions wherever they appear in the image.
+5. **OCR:** The OCR engine reads the detected text.
+6. **Name Extraction:** The extracted text is processed to identify the person's name.
+7. **AI Image Analysis:** Separate models perform supported visual analysis tasks, such as broad age-range estimation.
+8. **Data Integration:** Outputs from the different components are combined into one structured record per portrait.
+9. **Validation:** The system checks missing fields, uncertain predictions, and processing errors.
+10. **Spreadsheet Generation:** Pandas organizes the records into the required columns.
+11. **Results Display:** The website displays the generated records for review.
+12. **Export:** The user downloads the completed Excel or CSV file.
+
+### Proposed Processing Architecture
+
+`Image Upload → Preprocessing → Text Detection → OCR → Name Extraction`
+
+`Portrait Image → Age Estimation Model → Age Range`
+
+`OCR / Verified Data Source → Race Field`
+
+`All Outputs → Record Integration → Validation → Spreadsheet Export`
+
+## 7. Model Development Strategy
+
+Rather than building one large model responsible for everything, the project will use separate components for different tasks.
+
+| Component | Responsibility |
+|---|---|
+| Text Detection Model | Locate text within images |
+| OCR Engine | Read detected text |
+| Name Extraction Module | Identify and clean names |
+| Age Estimation Model | Estimate broad age categories |
+| Data Integration Module | Combine outputs into structured records |
+
+The development strategy will be:
+
+1. Understand the problem each component solves.
+2. Test suitable existing models.
+3. Establish baseline performance.
+4. Identify limitations and common errors.
+5. Fine-tune or train custom models only where necessary.
+6. Evaluate each component independently.
+7. Integrate the components into the complete application.
+
+This approach will provide practical experience in model selection, training, evaluation, and AI system integration.
+
+## 8. Testing and Evaluation
+
+The application will be tested using portrait images with different layouts and image qualities.
+
+Test variations should include:
+
+- Names at different positions.
+- Different font sizes and styles.
+- Different text colours and backgrounds.
+- Low-resolution and high-resolution images.
+- Blurry, noisy, or compressed images.
+- Images containing additional text besides names.
+- Multiple images processed in one session.
+
+### Evaluation Metrics
+
+**OCR and Name Extraction**
+- Character Error Rate (CER).
+- Word Error Rate (WER).
+- Exact name extraction accuracy.
+- Name extraction precision and recall.
+
+**Age Estimation**
+- Accuracy across the defined categories.
+- Confusion matrix.
+- Precision, recall, and F1-score.
+- Performance across different image conditions.
+
+**Complete Application**
+- Processing time per image.
+- Batch processing performance.
+- Missing or incorrectly generated records.
+- Spreadsheet formatting and consistency.
+- Error handling and reliability.
+
+A manually verified reference dataset will be created to measure actual performance.
+
+## 9. Privacy and Data Handling
+
+Portrait images may contain personal information, including information about students and minors.
+
+The application should:
+
+- Use images only when appropriate permission has been obtained.
+- Minimize unnecessary collection and retention of uploaded images.
+- Avoid exposing personal information in application logs.
+- Secure uploaded images and generated files.
+- Avoid collecting information that is not required by the project.
+- Clearly communicate that age estimates are not verified personal records.
+- Never infer race from facial appearance.
+
+## 10. Development Roadmap
+
+### Stage 1 — Dataset Collection and Inspection
+- Collect approximately 10–20 suitable portrait images initially.
+- Ensure each image contains one person's portrait and an associated name.
+- Inspect image dimensions, quality, text positions, and layouts.
+- Create manually verified reference labels.
+- Identify common challenges.
+
+**Completion goal:** Understand the images the application must process.
+
+### Stage 2 — Image Loading and Preprocessing
+- Set up the Python development environment.
+- Build image-loading functionality.
+- Inspect image properties.
+- Implement basic preprocessing.
+- Compare original and processed images.
+
+**Completion goal:** A reliable image-processing foundation.
+
+### Stage 3 — OCR Prototype
+- Evaluate suitable OCR engines.
+- Install and configure the selected engine.
+- Detect text regions.
+- Extract text and bounding-box coordinates.
+- Save raw OCR results.
+- Compare extracted names with verified reference labels.
+
+**Completion goal:** A working prototype that extracts names from individual portraits.
+
+### Stage 4 — Name Extraction and Data Cleaning
+- Identify names among extracted text.
+- Handle additional text that is not a name.
+- Normalize spacing and punctuation.
+- Handle missing or incomplete names.
+- Preserve OCR confidence scores.
+- Flag uncertain extractions.
+
+**Completion goal:** Clean, structured name records.
+
+### Stage 5 — Spreadsheet Generation
+- Create structured records using Pandas.
+- Generate sequential S/N values.
+- Implement the required columns.
+- Export to Excel and CSV.
+- Validate generated files.
+
+**Completion goal:** Convert extracted information into a working spreadsheet.
+
+### Stage 6 — Batch Processing
+- Process multiple portrait images.
+- Run the extraction pipeline independently on each image.
+- Combine results into one dataset.
+- Handle individual image failures without stopping the entire batch.
+- Track processing time and source image.
+- Check for duplicate records where appropriate.
+
+**Completion goal:** Process multiple portraits automatically.
+
+### Stage 7 — Additional AI Model Development
+- Define the age categories precisely.
+- Investigate suitable pre-trained age-estimation models.
+- Prepare an appropriately sourced and labelled dataset if model training is justified.
+- Fine-tune or train a model where necessary.
+- Evaluate predictions and uncertainty.
+- Integrate the model into the processing pipeline.
+- Populate race information only from explicit text or verified sources.
+
+**Completion goal:** Integrate independently evaluated AI components.
+
+### Stage 8 — Web Application Development
+- Build the Streamlit interface.
+- Implement multiple image uploads.
+- Connect the complete processing pipeline.
+- Display processing progress.
+- Show extracted records.
+- Highlight uncertain results.
+- Implement editable results.
+- Add Excel and CSV download functionality.
+- Handle application errors.
+
+**Completion goal:** A functional website that automates the workflow from image upload to spreadsheet generation.
+
+### Stage 9 — Evaluation and Improvement
+- Test on images not used during development.
+- Evaluate OCR and model performance.
+- Identify common failure cases.
+- Improve preprocessing and extraction logic.
+- Optimize batch processing.
+- Test the complete application.
+
+**Completion goal:** A reliable application with measurable performance.
+
+### Stage 10 — Deployment and Documentation
+- Organize the project into reusable modules.
+- Prepare dependencies and configuration files.
+- Deploy the web application.
+- Document setup and usage.
+- Document model choices, evaluation results, and limitations.
+- Prepare a professional GitHub repository.
+
+**Completion goal:** A deployed and documented portfolio project.
+
+## 11. Proposed Project Structure
+
+```text
+image-to-spreadsheet/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── data/
+│   ├── samples/
+│   └── reference/
+│
+├── src/
+│   ├── image_loader.py
+│   ├── preprocessing.py
+│   ├── text_detection.py
+│   ├── ocr_engine.py
+│   ├── name_extraction.py
+│   ├── age_estimation.py
+│   ├── data_integration.py
+│   ├── validation.py
+│   ├── export.py
+│   └── evaluation.py
+│
+├── models/
+│
+├── tests/
+│
+└── outputs/
+```
+
+The structure may evolve as development progresses. Not every file needs to be created at the beginning.
+
+## 12. Expected Outcome
+
+A functional web application where users upload one or multiple individual portrait images and the system automatically:
+
+- Detects and extracts names wherever they appear.
+- Performs supported AI-based image analysis.
+- Organizes the available information into structured records.
+- Displays the results for review.
+- Generates downloadable Excel and CSV spreadsheets.
+
+The final project will demonstrate practical experience in Python, computer vision, OCR, image preprocessing, AI model development, model evaluation, data processing, web application development, and software engineering.
+
+The emphasis will be on building a working, measurable, modular AI system rather than simply combining existing libraries without understanding how they work.

@@ -1,0 +1,490 @@
+# Development Roadmap: AI-Powered Image-to-Spreadsheet Extractor
+
+## Stage 1 — Understand the Data and Define the Problem
+
+**Goal:** Understand exactly what the application must process and extract before writing code.
+
+### Tasks
+
+1. Find 10–20 sample images containing individual portraits with visible names.
+2. Ensure each image contains one person's portrait.
+3. Include different image qualities, such as clear, blurry, low-resolution, and compressed images.
+4. Include different text sizes, fonts, colours, and backgrounds.
+5. Ensure names appear in different positions: top, bottom, left, right, or elsewhere.
+6. Identify images containing additional text besides the person's name.
+7. Confirm that you have permission to use the images, especially if they contain students or minors.
+8. Inspect each image manually.
+9. Define the expected spreadsheet structure:
+   - S/N
+   - Name
+   - Age Range
+   - Race
+10. Define the age categories precisely, including the age boundary between Young and Old.
+11. Define the source of race information. It must come from explicitly printed text or another verified source, not facial appearance.
+12. Create a manually verified reference spreadsheet containing the correct names and available labels.
+13. Record the common problems you expect the system to encounter.
+
+**Deliverable:** A small portrait dataset, clearly defined output requirements, and verified reference results.
+
+**Learning outcome:** Understanding datasets, data quality, requirements, ground truth, and problem definition.
+
+---
+
+## Stage 2 — Build the Simplest Python Prototype
+
+**Goal:** Load and display individual portrait images correctly using Python.
+
+### Tasks
+
+1. Create a GitHub repository for the project.
+2. Create a project folder on your computer.
+3. Create and activate a Python virtual environment.
+4. Install the initial dependencies:
+   - OpenCV
+   - Pillow
+   - Matplotlib
+5. Learn how to read an image from a file path.
+6. Display the image using OpenCV or Matplotlib.
+7. Check image dimensions, colour channels, and file format.
+8. Understand how images are represented as NumPy arrays.
+9. Handle invalid file paths and unsupported image files.
+10. Try loading images of different sizes and formats.
+11. Save your working code to GitHub with a clear commit message.
+
+**Deliverable:** A Python script that reliably loads and displays individual portrait images.
+
+**Learning outcome:** Python environments, file paths, image arrays, basic image processing, and Git.
+
+---
+
+## Stage 3 — Add OCR and Extract Visible Text
+
+**Goal:** Convert text in portrait images into machine-readable strings.
+
+### Tasks
+
+1. Learn what OCR is and how it differs from image classification.
+2. Understand the difference between text detection and text recognition.
+3. Compare EasyOCR and PaddleOCR on a few sample images.
+4. Choose one OCR library for the first implementation.
+5. Install the library and run its simplest example.
+6. Pass a single portrait image to the OCR engine.
+7. Extract recognized text and confidence scores, where available.
+8. Print every detected text region and its confidence.
+9. Understand how the model represents bounding boxes around text.
+10. Learn how bounding-box coordinates describe the position of detected text.
+11. Save the raw OCR output to a JSON or text file.
+12. Compare the output with the manually verified reference results.
+13. Identify common errors, such as misspelled names, missing words, and false detections.
+14. Record baseline OCR performance.
+
+**Deliverable:** A working OCR prototype that detects and extracts visible text and its coordinates from one portrait image.
+
+**Learning outcome:** Pre-trained models, inference, confidence scores, bounding boxes, text detection, and model evaluation.
+
+**Important:** At this stage, we are detecting and reading text. We are not identifying people through facial recognition.
+
+---
+
+## Stage 4 — Understand Text Position and Extract Names
+
+**Goal:** Identify which detected text belongs to the person's name, regardless of where it appears.
+
+This is particularly important because the name can appear anywhere within the portrait.
+
+### Tasks
+
+1. Study the bounding-box coordinates returned by the OCR engine.
+2. Visualize detected text boxes on the original image.
+3. Understand how to interpret the position and dimensions of each text box.
+4. Examine how names are positioned relative to the portrait.
+5. Investigate how to distinguish names from other detected text.
+6. Develop rules or a suitable text-processing approach for identifying likely names.
+7. Test different text positions, including top, bottom, left, and right.
+8. Handle images containing additional text, such as titles, labels, or organization names.
+9. Preserve the original OCR text and coordinates.
+10. Flag ambiguous detections for review.
+11. Compare extracted names against the verified reference data.
+12. Measure name-extraction accuracy.
+
+**Deliverable:** A name-extraction module that identifies the likely name from an individual portrait without relying on a fixed text position.
+
+**Learning outcome:** Bounding-box interpretation, spatial information, text processing, layout analysis, and information extraction.
+
+**Important:** Do not assume that the first detected text is always the name. The system must evaluate the detected text rather than rely on detection order.
+
+---
+
+## Stage 5 — Improve Image Preprocessing
+
+**Goal:** Improve text recognition by preparing images before sending them to the OCR engine.
+
+### Tasks
+
+1. Test OCR on the original images first.
+2. Convert images to grayscale where appropriate.
+3. Experiment with resizing small images.
+4. Apply thresholding to improve contrast when useful.
+5. Test denoising on noisy images.
+6. Try sharpening or other enhancement methods only when justified.
+7. Compare OCR results before and after each transformation.
+8. Test preprocessing on different text colours and backgrounds.
+9. Avoid applying every technique to every image; some transformations can make recognition worse.
+10. Create reusable preprocessing functions.
+11. Measure whether each technique improves recognition accuracy.
+12. Determine which preprocessing operations should be applied conditionally.
+
+**Deliverable:** A reusable image-preprocessing module with evidence showing which transformations improve OCR performance.
+
+**Learning outcome:** OpenCV, image enhancement, experimentation, and evidence-based optimization.
+
+---
+
+## Stage 6 — Clean and Organize Extracted Names
+
+**Goal:** Convert raw OCR output into clean, structured name records.
+
+### Tasks
+
+1. Create a function that accepts OCR output.
+2. Remove empty strings and irrelevant detections.
+3. Normalize unnecessary whitespace.
+4. Handle punctuation and obvious formatting inconsistencies.
+5. Preserve the original OCR text so corrections can be traced.
+6. Distinguish likely names from other text.
+7. Use text positions and layout information where necessary.
+8. Detect likely duplicates without automatically deleting legitimate repeated names.
+9. Allow uncertain names to be flagged for review.
+10. Match extracted names against verified reference data.
+11. Calculate name-extraction precision and recall where applicable.
+12. Separate raw OCR results from cleaned results.
+13. Create a structured record for each portrait.
+14. Keep track of the source image associated with each record.
+
+**Deliverable:** A Python module that converts OCR detections into organized, reviewable name records.
+
+**Learning outcome:** Data cleaning, text processing, data structures, validation, and error analysis.
+
+---
+
+## Stage 7 — Generate Excel and CSV Files
+
+**Goal:** Convert the cleaned records into structured spreadsheet files.
+
+### Tasks
+
+1. Learn the basics of Pandas DataFrames.
+2. Convert the cleaned records into a DataFrame.
+3. Create the required columns in the correct order:
+   - S/N
+   - Name
+   - Age Range
+   - Race
+4. Generate sequential S/N values.
+5. Populate the Name column with extracted and verified names.
+6. Populate additional fields only when reliable information is available.
+7. Leave unavailable fields blank or mark them as Unknown.
+8. Export the DataFrame to CSV.
+9. Export it to Excel using OpenPyXL.
+10. Format the Excel header, column widths, and alignment.
+11. Freeze the header row and enable filters.
+12. Test the exported files by opening and reading them back into Python.
+13. Verify that names, rows, and column order remain correct.
+
+**Deliverable:** A working script that generates clean `.xlsx` and `.csv` files.
+
+**Learning outcome:** Pandas, tabular data, Excel automation, and data validation.
+
+---
+
+## Stage 8 — Support Multiple Images and Batch Processing
+
+**Goal:** Process multiple portrait images automatically in one run.
+
+### Tasks
+
+1. Create a folder for input images.
+2. Write a function that processes one image from beginning to end.
+3. Ensure the function returns a structured record for the portrait.
+4. Write a loop that processes every supported image in the input folder.
+5. Keep track of which image produced each result.
+6. Combine records from multiple images into one dataset.
+7. Decide how duplicate records should be handled across images.
+8. Handle corrupt images without stopping the entire pipeline.
+9. Report which files succeeded and which failed.
+10. Track processing time and errors per image.
+11. Export all successfully processed records into one spreadsheet.
+12. Test with different numbers of images.
+13. Confirm that one failed image does not destroy the results from other images.
+14. Ensure that every successfully processed portrait produces one record.
+
+**Deliverable:** A batch-processing pipeline that accepts multiple portrait images and creates one consolidated spreadsheet.
+
+**Learning outcome:** Functions, loops, exception handling, batch processing, and pipeline design.
+
+---
+
+## Stage 9 — Develop the Age Estimation Model
+
+**Goal:** Develop and evaluate an independent AI component for estimating broad age categories.
+
+This stage introduces a separate computer vision task. It should not interfere with the OCR and name-extraction pipeline.
+
+### Tasks
+
+1. Understand the difference between image classification and age estimation.
+2. Define the Young and Old categories precisely.
+3. Research existing pre-trained age-estimation models.
+4. Understand the datasets used to train the selected models.
+5. Investigate the limitations and biases of age-estimation systems.
+6. Select a suitable model for experimentation.
+7. Test the model on appropriately sourced and consented images.
+8. Compare predicted age categories against verified reference labels.
+9. Evaluate model performance using appropriate metrics.
+10. Examine prediction confidence and uncertainty.
+11. Decide when a prediction should be marked Unknown.
+12. Fine-tune or train a model only if there is a clear reason and suitable data.
+13. Save the trained model and its configuration.
+14. Build an independent inference function that accepts a portrait and returns an age-range prediction.
+15. Test the inference function independently.
+
+**Deliverable:** An independently evaluated age-estimation component that returns a broad age category or Unknown.
+
+**Learning outcome:** Computer vision, transfer learning, pre-trained models, model inference, classification, and evaluation.
+
+**Important:** An image-based age estimate is not a verified age. Be especially cautious with minors and avoid presenting uncertain predictions as facts.
+
+---
+
+## Stage 10 — Integrate the Processing Components
+
+**Goal:** Combine the independent components into one automated processing pipeline.
+
+### Tasks
+
+1. Review the outputs of the OCR, name-extraction, and age-estimation modules.
+2. Define a consistent data structure for passing information between modules.
+3. Create a central processing function for one portrait.
+4. Connect image loading and preprocessing.
+5. Connect text detection and OCR.
+6. Connect name extraction.
+7. Connect age estimation.
+8. Populate race only from explicit image text or a verified data source.
+9. Combine available outputs into one structured record.
+10. Handle missing values and uncertain predictions.
+11. Ensure an error in one component does not unnecessarily destroy other valid results.
+12. Test the integrated pipeline on individual portraits.
+13. Test the integrated pipeline on batches of portraits.
+14. Verify that the generated records follow the required spreadsheet structure.
+
+**Deliverable:** An integrated Python pipeline that converts individual portraits into structured records automatically.
+
+**Learning outcome:** Modular architecture, model integration, data flow, error handling, and system design.
+
+---
+
+## Stage 11 — Build the Web Application
+
+**Goal:** Give users a simple website for running the complete processing pipeline.
+
+We'll use Streamlit initially so you can focus on Python and application logic rather than learning a frontend framework too early.
+
+### Tasks
+
+1. Install Streamlit.
+2. Create an application entry point, such as `app.py`.
+3. Add a page title and brief instructions.
+4. Add an image-upload component.
+5. Allow users to upload one or multiple portrait images.
+6. Validate file types and file sizes.
+7. Display uploaded image previews.
+8. Add a button to start processing.
+9. Connect the button to the integrated Python pipeline.
+10. Display a processing indicator while images are being processed.
+11. Display processing progress for multiple images.
+12. Display the generated records in a structured table.
+13. Show uncertain OCR results and model predictions.
+14. Show meaningful errors when an image cannot be processed.
+15. Add a download button for Excel.
+16. Add a download button for CSV.
+17. Test the application with multiple images and different input conditions.
+
+**Deliverable:** A working website that accepts portrait images, automatically processes them, and generates a spreadsheet.
+
+**Learning outcome:** Web application development, UI components, state management, file uploads, and integrating reusable Python modules.
+
+At this point, you will have a complete first version of the intended application.
+
+---
+
+## Stage 12 — Make the Results Editable and Trustworthy
+
+**Goal:** Allow users to correct uncertain or incorrect results before exporting the final spreadsheet.
+
+### Tasks
+
+1. Add an editable results table.
+2. Allow users to correct misspelled names.
+3. Allow users to remove incorrect detections.
+4. Allow users to add missing names manually.
+5. Show which source image each record came from.
+6. Flag low-confidence OCR detections for review.
+7. Display uncertainty in age predictions.
+8. Allow users to confirm or correct uncertain results.
+9. Validate required fields before export.
+10. Regenerate the spreadsheet using edited data rather than the original model output.
+11. Test that user corrections are preserved in the exported file.
+12. Test duplicate names and repeated entries.
+13. Measure the improvement in final accuracy after review.
+
+**Deliverable:** An application that produces reviewable and user-verified spreadsheets rather than blindly trusting model predictions.
+
+**Learning outcome:** Human-in-the-loop AI, validation, UI state, and quality assurance.
+
+This stage matters because even a good AI system will make mistakes. Users should be able to identify and correct them easily.
+
+---
+
+## Stage 13 — Evaluate and Improve the Complete System
+
+**Goal:** Prove how well the complete application works using measurable results.
+
+### Tasks
+
+1. Build a manually verified reference dataset.
+2. Separate development images from evaluation images.
+3. Test the system on images it has not been tuned against.
+4. Calculate Character Error Rate (CER) for OCR text where appropriate.
+5. Calculate exact-name extraction accuracy.
+6. Measure precision and recall for name extraction.
+7. Evaluate age classification using accuracy, precision, recall, F1-score, and a confusion matrix.
+8. Separate errors caused by image quality from errors caused by text interpretation.
+9. Group errors by text position, font size, blur, and image layout.
+10. Compare OCR performance before and after preprocessing.
+11. Identify the most frequent failure cases.
+12. Measure processing time per image and for entire batches.
+13. Evaluate how often the application produces missing or incomplete records.
+14. Fix the highest-impact problems first.
+15. Retest after each meaningful change.
+16. Record results in an evaluation report.
+
+**Deliverable:** A documented evaluation showing the strengths, weaknesses, and measured performance of the complete application.
+
+**Learning outcome:** Experimental design, metrics, debugging, model evaluation, and honest performance reporting.
+
+Don't claim the system is highly accurate simply because it worked on a few images. Test it on a representative dataset.
+
+---
+
+## Stage 14 — Deploy the Website
+
+**Goal:** Make the application accessible online.
+
+### Tasks
+
+1. Organize the code into reusable modules.
+2. Create a `requirements.txt` file.
+3. Remove hard-coded local file paths.
+4. Configure the application for deployment.
+5. Add appropriate upload size and file-type restrictions.
+6. Decide how uploaded images and generated spreadsheets will be handled.
+7. Avoid retaining personal images unnecessarily.
+8. Add useful error messages and logging without exposing personal data.
+9. Test the application locally from a clean environment.
+10. Deploy to a suitable hosting platform.
+11. Test uploads, processing, and downloads on the deployed version.
+12. Document resource limitations, including processing time and memory usage.
+13. Check whether the hosting platform has sufficient resources for the selected models.
+
+**Deliverable:** A deployed, usable web application.
+
+**Learning outcome:** Deployment, dependencies, application configuration, privacy, resource management, and production debugging.
+
+---
+
+## Stage 15 — Polish the Project for Your Portfolio
+
+**Goal:** Turn the application into a project that demonstrates engineering ability, not just a working demo.
+
+### Tasks
+
+1. Write a clear GitHub README.
+2. Explain the problem the application solves.
+3. Document the architecture and workflow.
+4. Add setup and installation instructions.
+5. Explain how to run the application locally.
+6. Include screenshots of the interface.
+7. Document the dataset and how it was obtained.
+8. Document the OCR engine and AI models selected.
+9. Explain why each model or library was selected.
+10. Publish evaluation results and known limitations.
+11. Add tests for image loading, preprocessing, OCR, name extraction, model inference, data integration, and export.
+12. Add a `.gitignore` to prevent uploading virtual environments, private images, and generated files.
+13. Keep credentials and private data out of the repository.
+14. Create meaningful Git commits throughout development.
+15. Record what you learned and what you would improve next.
+
+**Deliverable:** A documented GitHub project that you can demonstrate to employers or clients.
+
+**Learning outcome:** Software engineering, testing, documentation, and communicating technical work.
+
+---
+
+## Proposed Project Structure
+
+The structure will evolve as the project develops. You do not need to create every file at the beginning.
+
+```text
+image-to-spreadsheet/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── data/
+│   ├── samples/
+│   └── reference/
+│
+├── models/
+│   └── age_estimation/
+│
+├── src/
+│   ├── image_loader.py
+│   ├── preprocessing.py
+│   ├── text_detection.py
+│   ├── ocr_engine.py
+│   ├── name_extraction.py
+│   ├── age_estimation.py
+│   ├── data_integration.py
+│   ├── validation.py
+│   ├── batch_processing.py
+│   ├── export.py
+│   └── evaluation.py
+│
+├── tests/
+│   ├── test_image_loader.py
+│   ├── test_preprocessing.py
+│   ├── test_ocr.py
+│   ├── test_name_extraction.py
+│   ├── test_data_integration.py
+│   └── test_export.py
+│
+└── outputs/
+```
+
+---
+
+## Development Principles
+
+Throughout the project, follow these principles:
+
+1. **Build before expanding:** Get each stage working before introducing the next.
+2. **Understand before implementing:** Understand what each function, model, and library does and why it is needed.
+3. **Test before training:** Evaluate existing models before deciding to train custom ones.
+4. **Separate responsibilities:** Keep OCR, name extraction, age estimation, data integration, and export independent.
+5. **Measure performance:** Use verified reference data instead of relying on visual impressions.
+6. **Handle uncertainty:** Do not silently turn uncertain predictions into facts.
+7. **Build incrementally:** Avoid creating unnecessary complexity before the basic pipeline works.
+8. **Document as you go:** Keep track of decisions, experiments, errors, and improvements.
+
+**Final development principle:** The goal is not simply to make an application that works. It is to understand and build an AI-powered system whose individual components can be tested, evaluated, improved, and maintained.
