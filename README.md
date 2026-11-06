@@ -1,4 +1,9 @@
 # 📄 AI-Powered Portrait Extractor
+<img width="1919" height="808" alt="2026-11-05 10 37 06" src="https://github.com/user-attachments/assets/1751a7b8-7737-40ac-a5c8-89fc79ec03ff" />
+<img width="1913" height="834" alt="2026-11-05 10 31 24" src="https://github.com/user-attachments/assets/8fa0ca63-e57e-4ab8-84bd-5737ea448e6e" />
+<img width="1911" height="831" alt="2026-11-05 10 57 29" src="https://github.com/user-attachments/assets/d3ead852-ec18-4c0d-9ccd-0be4e5abb544" />
+<img width="1920" height="839" alt="2026-11-05 10 56 22" src="https://github.com/user-attachments/assets/9f1a4b32-486b-4e7b-bd0b-36cacaecad68" />
+
 
 An end-to-end Python pipeline and interactive web application that processes portrait images, extracts names using Optical Character Recognition (OCR), estimates age demographics using facial analysis AI, and exports the cleaned data to formatted Excel spreadsheets.
 
