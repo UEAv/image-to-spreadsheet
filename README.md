@@ -26,8 +26,8 @@ An end-to-end Python pipeline and interactive web application that processes por
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
-   cd your-repo-name
+   git clone [https://github.com/UEAv/image-to-spreadsheet.git](https://github.com/UEAv/image-to-spreadsheet.git)
+   cd image-to-spreadsheet
    ```
 
 2. **Create and activate a virtual environment:**
